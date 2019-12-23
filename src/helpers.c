@@ -54,7 +54,7 @@ uint64_t calculate_address_with_aslr(uint64_t base, uint64_t offset_from_base){
 }
 
 uint64_t patch_jmp(void *addr, void *dst){
-    set_mem_rw(addr, sizeof(uint64_t));
+    set_mem_rwx(addr, sizeof(uint64_t));
     uint64_t orig_bytes = *(uint64_t *)addr;
     printf("[JMP] original bytes: %08llx\n", orig_bytes);
     uint32_t jmp_offset = (uint32_t)((char*)dst - (char*)addr - 5);
@@ -66,6 +66,6 @@ uint64_t patch_jmp(void *addr, void *dst){
     *(uint64_t *)addr = bytes;
     printf("[JMP] offset: 0x%08x\n", jmp_offset);
     printf("[PATCHER] replaced bytes: 0x%08llx\n", bytes);
-    set_mem_rx(addr, sizeof(uint64_t));
+    set_mem_rwx(addr, sizeof(uint64_t));
     return orig_bytes;
 }
