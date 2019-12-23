@@ -7,6 +7,7 @@
 #define DWORD unsigned int
 
 void commandPatches(){
+    printf("[CommandHanlder] Command Handler Patches injected\n");
     void *dst = (void *)(AC_BASE + commandHandlerOffset);
     *(uint64_t *)dst = commandOverwrites;
     void (*objc_load_addr_orig)(void);
