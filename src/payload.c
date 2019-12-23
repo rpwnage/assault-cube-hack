@@ -129,7 +129,7 @@ void commandPatches(void){
 }
 
 int applyPatches(){
-    void *src = (void *)calculate_address_with_aslr(0x100000000, (uint64_t)entryOffset);
+    void *src = (void *)(AC_BASE + commandHandlerOffset);
     void *dst = (void *)&commandPatches;
     printf("[PATCHER] %p -> %p\n", src, dst);
     uint64_t commandOverwrites = patch_jmp(src, dst);
