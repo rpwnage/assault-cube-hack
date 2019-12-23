@@ -9,4 +9,5 @@ This Hack is barely usable and only for development purposes at the moment. As o
 0x10002421c - change `jne 0x10002422e` to `jmp 0x10002422e` to allow edit mode in multiplayer
 
 ### Credits 
+- Memory Managment and Hooking was done by [notxdev](https://github.com/notxdev)
 - The openGL Hook is based on [karek314](https://github.com/karek314/macOS-OpenGL-hook)'s version.

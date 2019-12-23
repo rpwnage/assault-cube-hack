@@ -1,21 +1,8 @@
-//#include <Cocoa/Cocoa.h>
-#include <OpenCL/opencl.h>
-#include <GLUT/glut.h>
-#include <OpenGL/OpenGL.h>
-#include <stdio.h>
-#include <dlfcn.h>
-#include <stdlib.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <OpenCL/cl_gl.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <Carbon/Carbon.h>
-#include <CoreGraphics/CoreGraphics.h>
 #include "mach_override.h"
 #include "helpers.h"
 #include "offsets.h"
+#include "payload.h"
+
 #define DWORD unsigned int
 int menuType = 2;
 
@@ -126,28 +113,32 @@ void SDL_GetKeyboardState(){
 
 void commandPatches(void){
     printf("Applying command patches");
+    void *dst = (void *)(AC_BASE + commandHandlerOffset);
+    *(uint64_t *)dst = commandOverwrites;
+    printf("[PATCHER] Restored original bytes: %08llx\n", *(uint64_t *)dst);
+    void (*objc_load_addr_orig)(void);
+    objc_load_addr_orig = dst;
+    printf("[PATCHER] Calling original function, address: %p\n", objc_load_addr_orig);
+    // objc_load_addr_orig();
 }
 
 int applyPatches(){
-    void *src = (void *)(AC_BASE + commandHandlerOffset);
+    void *src = (void *)((AC_BASE + commandHandlerOffset));
     void *dst = (void *)&commandPatches;
     printf("[PATCHER] %p -> %p\n", src, dst);
-    uint64_t commandOverwrites = patch_jmp(src, dst);
-  //  printf("Command-Overwrite return: %llu\n", commandOverwrites);
+    commandOverwrites = patch_jmp(src, dst);
+    printf("[PATCHER] Command-Overwrite return: 0x%02llx\n", commandOverwrites);
     return 0;
 }
 
 __attribute__((constructor)) static void ctor(void) {
     if(applyPatches() != 0){
-        printf("Error occured while trying to apply patches.\n");
+        printf("[ERROR] Error occured while trying to apply patches.\n");
         exit(1);
     }else {
-        printf("Patches applied!\n");
+        printf("[PATCHER] applied!\n");
     }
-    printf("Dylib constructor called!");
-    printf("\nhooking opengl flush drawable\n");
     mach_override_ptr(dlsym(RTLD_DEFAULT, "CGLFlushDrawable"), CGLFlushDrawableOverride, (void **)&Original_CGLFlushDrawable);
-    printf("First hook done\n");
-
+    printf("[PATCHER] Everything set\n");
 }
 
