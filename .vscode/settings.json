@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.myphp": "php",
+        "*.rc": "ruby",
+        "offsets.h": "c"
+    }
+}

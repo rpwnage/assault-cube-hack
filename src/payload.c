@@ -13,11 +13,11 @@
 #include <string.h>
 #include <Carbon/Carbon.h>
 #include <CoreGraphics/CoreGraphics.h>
-#include <ft2build.h>
 #include "mach_override.h"
 #include "helpers.h"
+#include "offsets.h"
 #define DWORD unsigned int
-
+int menuType = 2;
 
 float option = 1.00, oldOption;
 int arrowBuffer = 0;
@@ -102,19 +102,21 @@ void (*Original_SDL_GetKeyboardState)();
 
 
 void CGLFlushDrawableOverride(CGLContextObj ctx) {
-    oldOption = option;
-    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,kVK_DownArrow)) {
-        if(option >= 0 && option < (sizeof(actions)/sizeof(actions[0]))){
-            option = option + 0.25;
+    if(menuType == 1){
+        oldOption = option;
+        if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,kVK_DownArrow)) {
+            if(option >= 0 && option < (sizeof(actions)/sizeof(actions[0]))){
+                option = option + 0.25;
+            }
+        }else if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,kVK_UpArrow)) {
+            if(option > 0.000){
+                option = option - 0.25;
+            }
+        }else if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,kVK_Return)) {
+            toggleOption(option);
         }
-    }else if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,kVK_UpArrow)) {
-        if(option > 0.000){
-            option = option - 0.25;
-        }
-    }else if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,kVK_Return)) {
-        toggleOption(option);
+        drawMenu(option);
     }
-    drawMenu(option);
     Original_CGLFlushDrawable(ctx);
 }
 
@@ -122,10 +124,30 @@ void SDL_GetKeyboardState(){
     Original_SDL_GetKeyboardState();
 }
 
+void commandPatches(void){
+    printf("Applying command patches");
+}
+
+int applyPatches(){
+    void *src = (void *)calculate_address_with_aslr(0x100000000, (uint64_t)entryOffset);
+    void *dst = (void *)&commandPatches;
+    printf("[PATCHER] %p -> %p\n", src, dst);
+    uint64_t commandOverwrites = patch_jmp(src, dst);
+  //  printf("Command-Overwrite return: %llu\n", commandOverwrites);
+    return 0;
+}
+
 __attribute__((constructor)) static void ctor(void) {
+    if(applyPatches() != 0){
+        printf("Error occured while trying to apply patches.\n");
+        exit(1);
+    }else {
+        printf("Patches applied!\n");
+    }
     printf("Dylib constructor called!");
     printf("\nhooking opengl flush drawable\n");
     mach_override_ptr(dlsym(RTLD_DEFAULT, "CGLFlushDrawable"), CGLFlushDrawableOverride, (void **)&Original_CGLFlushDrawable);
     printf("First hook done\n");
+
 }
 
