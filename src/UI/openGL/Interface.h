@@ -2,7 +2,7 @@
 #include "../../helpers.h"
 #include "../../payload.h"
 
-void unlimited_ammo();
+int unlimited_ammo();
 void toggleOption(int option);
 void drawOptionRow(char *name, int red, int blue, int green, int index);
 void drawBottomLeftOption(char *name, int red, int blue, int green, int index);

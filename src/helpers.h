@@ -23,13 +23,14 @@
 #include <errno.h>
 #include <libgen.h>
 
-
+#include "offsets.h"
 #include "mach_override.h"
 
 size_t pageSize;
 mach_port_t pTw;
 kern_return_t ret;
-
+void *calculatePlayerBase();
+void *getPointerFromAddress(void *addr);
 void drawBitmapText(char *string, float x, float y, float z);
 uint64_t patch_jmp(void *addr, void *dst);
 void set_mem_rwx(void *addr, uint64_t size);

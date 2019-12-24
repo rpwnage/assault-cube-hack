@@ -1,7 +1,7 @@
 #include "openGL/Interface.h"
 #include "Internal/Interface.h"
 
-int menuType = 0;
+int menuType = 1;
 
 /*
       Menu types:

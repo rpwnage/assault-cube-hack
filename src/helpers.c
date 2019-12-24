@@ -1,9 +1,29 @@
 #include "mach_override.h"
 #include "helpers.h"
-#include "offsets.h"
+
 char *EXECUTABLE_NAME = "assaultcube";
 int64_t aslr_slide = 0;
 
+void *calculatePlayerBase(){
+    void *stage1Pointer = getPointerFromAddress((void *)0x1001ABEF8);
+    void *stage2Pointer = getPointerFromAddress(stage1Pointer + 0x3C8);
+    void *stage3Pointer = getPointerFromAddress(stage2Pointer + 0x28);
+    void *finalStage = (void *)(stage3Pointer - 0x150);
+    return finalStage;
+}
+
+void *getPointerFromAddress(void *addr){
+    task_for_pid(mach_task_self(), getpid(), &pTw);
+    vm_offset_t dP = 0;
+    mach_msg_type_number_t sz;
+    if(vm_read(pTw, (vm_address_t)addr, sizeof(vm_address_t), &dP, &sz) != KERN_SUCCESS){
+        printf("[Helper] Reading memory failed");
+    }else {
+        void **bytes = (void *)dP;
+        return *bytes;
+    }
+    return 0x0;
+}
 
 void drawBitmapText(char *string, float x, float y, float z){
     char *c;
