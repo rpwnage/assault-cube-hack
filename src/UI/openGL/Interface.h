@@ -1,6 +1,7 @@
 #include "../../mach_override.h"
 #include "../../helpers.h"
 #include "../../payload.h"
+#include "hack.h"
 
 int unlimited_ammo();
 void toggleOption(int option);

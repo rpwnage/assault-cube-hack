@@ -2,6 +2,7 @@
     "files.associations": {
         "*.myphp": "php",
         "*.rc": "ruby",
-        "offsets.h": "c"
+        "offsets.h": "c",
+        "interface.h": "c"
     }
 }
