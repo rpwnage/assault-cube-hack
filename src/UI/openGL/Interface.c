@@ -16,7 +16,7 @@ void toggleOption(int option){
         }if((option) == 3){
             moon_jump();
         }if((option) == 4){
-            give_akimbo();
+            hacksloop(actions_active);
         }if((option) == 5){
             snake();
         }

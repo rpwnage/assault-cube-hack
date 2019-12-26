@@ -41,8 +41,11 @@ __attribute__((constructor)) static void ctor(void) {
             mach_override_ptr(dlsym(RTLD_DEFAULT, "CGLFlushDrawable"), CGLFlushDrawableOverride, (void **)&Original_CGLFlushDrawable);
         }
         freeGameFunctions();
+        patch_functions();
         playerBase = calculatePlayerBase();
-        getCurrentAmmo();
+        entityBase = calculateEntityBase();
+        printf("[PATCHER] Using Playerbase: %p\n", playerBase);
+        printf("[PATCHER] Using Entitybase: %p\n", entityBase);
         printf("[PATCHER] Everything set\n");
     });
 }

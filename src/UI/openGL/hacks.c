@@ -4,6 +4,9 @@ void hacksloop(int actions[]){
     if(actions[1] == 1){
         unlimited_ammo();
     }
+    if(actions[4] == 1){
+        give_akimbo();
+    }
 }
 
 int unlimited_ammo(){
@@ -37,9 +40,6 @@ int give_akimbo(){
         playerBase = calculatePlayerBase();
         *(int*)(playerBase + 0x10C) = 1;
         *(int*)(playerBase + 0x15C) = 999;
-        if((*(int*)(playerBase + 0x15C) == 999) && (*(int*)(playerBase + 0x10C) != 999)){
-            return -1;
-        }
     }
     return 0;
 }

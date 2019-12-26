@@ -12,12 +12,17 @@ void *calculatePlayerBase(){
     return finalStage;
 }
 
+void *calculateEntityBase(){
+    void *stage1Pointer = getPointerFromAddress(AC_BASE + entityOffset);
+    return stage1Pointer;
+}
+
 void *getPointerFromAddress(void *addr){
     task_for_pid(mach_task_self(), getpid(), &pTw);
     vm_offset_t dP = 0;
     mach_msg_type_number_t sz;
-    if(vm_read(pTw, (vm_address_t)addr, sizeof(vm_address_t), &dP, &sz) != KERN_SUCCESS){
-        printf("[Helper] Reading memory failed");
+    if((ret = vm_read(pTw, (vm_address_t)addr, sizeof(vm_address_t), &dP, &sz)) != KERN_SUCCESS){
+        printf("[Helper] Reading memory failed for %p! (%d)\n", addr, ret);
     }else {
         void **bytes = (void *)dP;
         return *bytes;
