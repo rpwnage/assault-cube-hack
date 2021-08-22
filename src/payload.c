@@ -44,9 +44,15 @@ __attribute__((constructor)) static void ctor(void) {
         patch_functions();
         playerBase = calculatePlayerBase();
         entityBase = calculateEntityBase();
-        printf("[PATCHER] Using Playerbase: %p\n", playerBase);
-        printf("[PATCHER] Using Entitybase: %p\n", entityBase);
-        printf("[PATCHER] Everything set\n");
+        
+        if (playerBase != NULL && entityBase != NULL){
+            printf("[PATCHER] Using Playerbase: %p\n", playerBase);
+            printf("[PATCHER] Using Entitybase: %p\n", entityBase);
+            printf("[PATCHER] Everything set\n");
+        } else {
+            printf("[PATCHER] Error: playerBase and entityBase are null. Couldn't set!\n");
+            //handle error
+        }
     });
 }
 
